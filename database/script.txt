@@ -60,10 +60,10 @@ INSERT INTO Roles VALUES (1, N'Quản trị viên'), (2, N'Nhân viên'), (3, N'
 
 -- Chèn Users (Tất cả pass là 123)
 INSERT INTO Users (Username, Password, FullName, RoleID) VALUES 
-('admin', '123', N'Nguyễn Văn Dũng (Admin)', 1),
-('staff01', '123', N'Trần Thị Nhân Viên', 2),
-('khach01', '123', N'Lê Minh Khách', 3),
-('khach02', '123', N'Phạm Thu Hà', 3);
+('admin', '123', N'Nguyễn Trung Kiên (Admin)', 1),
+('staff01', '123', N'Nguyễn Thành Tiến', 2),
+('khach01', '123', N'Ngô Hoài Nam', 3),
+('khach02', '123', N'Vũ Văn Duy', 3);
 
 -- Chèn Chuyến bay mẫu
 INSERT INTO Flights (FlightCode, Departure, Arrival, DepartureTime, TotalSeats, Status) VALUES 
