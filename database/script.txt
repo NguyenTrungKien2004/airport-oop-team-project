@@ -1,20 +1,18 @@
-/* DỰ ÁN: QUẢN LÝ SÂN BAY - NHÓM DZUNG */
-
--- 1. Tạo Database mới
+USE master;
+GO
+IF EXISTS (SELECT * FROM sys.databases WHERE name = 'AirportManagement')
+    DROP DATABASE AirportManagement;
+GO
 CREATE DATABASE AirportManagement;
 GO
 USE AirportManagement;
 GO
 
--- PHẦN 1: TẠO CÁC BẢNG (TABLES)
-
--- Bảng Vai trò (Phân quyền)
 CREATE TABLE Roles (
     RoleID INT PRIMARY KEY,
-    RoleName NVARCHAR(50) NOT NULL -- Admin, Staff, Passenger
+    RoleName NVARCHAR(50) NOT NULL
 );
 
--- Bảng Người dùng (Kien-Lam)
 CREATE TABLE Users (
     UserID INT PRIMARY KEY IDENTITY(1,1),
     Username VARCHAR(50) UNIQUE NOT NULL,
@@ -23,68 +21,23 @@ CREATE TABLE Users (
     RoleID INT FOREIGN KEY REFERENCES Roles(RoleID)
 );
 
--- Bảng Chuyến bay (Tien-Lam)
 CREATE TABLE Flights (
-    FlightID INT PRIMARY KEY IDENTITY(1,1), --chuyen bay
-    FlightCode VARCHAR(20) UNIQUE NOT NULL, --ma chuyen bay
-    Departure NVARCHAR(100) NOT NULL,       --diem di
-    Arrival NVARCHAR(100) NOT NULL,         --diem den
-    DepartureTime DATETIME NOT NULL,        --thoi gian khoi hanh(di)
-    TotalSeats INT DEFAULT 100,             --tong so ghe
-    Status NVARCHAR(50) DEFAULT N'Scheduled' -- Scheduled, Boarding, Delayed, Cancelled
+    FlightID INT PRIMARY KEY IDENTITY(1,1),
+    FlightNumber VARCHAR(20) UNIQUE NOT NULL, -- Đồng bộ tên này
+    DepartureCity NVARCHAR(100) NOT NULL,    -- Đồng bộ tên này
+    DestinationCity NVARCHAR(100) NOT NULL,  -- Đồng bộ tên này
+    DepartureTime DATETIME NOT NULL,
+    ArrivalTime DATETIME,                    -- Cần thiết cho chức năng của Tiến
+    Gate VARCHAR(10),                        -- Cần thiết cho chức năng của Tiến
+    TotalSeats INT DEFAULT 100,
+    Status NVARCHAR(50) DEFAULT N'Scheduled'
 );
 
--- Bảng Danh sách ghế (Nam-Lam)
-CREATE TABLE Seats (
-    SeatID INT PRIMARY KEY IDENTITY(1,1),
-    FlightID INT FOREIGN KEY REFERENCES Flights(FlightID),
-    SeatNumber VARCHAR(10) NOT NULL, -- Ví dụ: A1, A2, B1...
-    IsOccupied BIT DEFAULT 0 -- 0: Ghế trống, 1: Đã có người ngồi
-);
-
--- Bảng Vé (Duy,Nam-Lam)
-CREATE TABLE Tickets (
-    TicketID INT PRIMARY KEY IDENTITY(1,1),                --ma so ve
-    FlightID INT FOREIGN KEY REFERENCES Flights(FlightID), --ma chuyen bay
-    PassengerID INT FOREIGN KEY REFERENCES Users(UserID),  --ma hanh khach
-    SeatID INT FOREIGN KEY REFERENCES Seats(SeatID),       --Liên kết tới ghế cụ thể
-    BookingDate DATETIME DEFAULT GETDATE(),                --ngay dat ve
-    IsCheckedIn BIT DEFAULT 0, -- 0: Chưa check-in, 1: Đã xong thủ tục
-    Status NVARCHAR(50) DEFAULT N'Booked' -- Booked, Cancelled
-);
-
--- PHẦN 2: CHÈN DỮ LIỆU MẪU (DATA SEEDING)
-
--- Chèn Roles
 INSERT INTO Roles VALUES (1, N'Quản trị viên'), (2, N'Nhân viên'), (3, N'Hành khách');
-
--- Chèn Users (Tất cả pass là 123)
 INSERT INTO Users (Username, Password, FullName, RoleID) VALUES 
 ('admin', '123', N'Nguyễn Trung Kiên (Admin)', 1),
 ('staff01', '123', N'Nguyễn Thành Tiến', 2),
-('khach01', '123', N'Ngô Hoài Nam', 3),
-('khach02', '123', N'Vũ Văn Duy', 3);
+('khach01', '123', N'Ngô Hoài Nam', 3);
 
--- Chèn Chuyến bay mẫu
-INSERT INTO Flights (FlightCode, Departure, Arrival, DepartureTime, TotalSeats, Status) VALUES 
-('VN123', N'Hà Nội (HAN)', N'TP. Hồ Chí Minh (SGN)', '2026-05-10 08:00:00', 5, N'Scheduled'),
-('VJ456', N'Đà Nẵng (DAD)', N'Hà Nội (HAN)', '2026-05-12 14:30:00', 3, N'Boarding');
-
--- Chèn Ghế cho chuyến bay VN123 (5 ghế)
-INSERT INTO Seats (FlightID, SeatNumber) VALUES (1, 'A1'), (1, 'A2'), (1, 'B1'), (1, 'B2'), (1, 'C1');
-
--- Chèn Ghế cho chuyến bay VJ456 (3 ghế)
-INSERT INTO Seats (FlightID, SeatNumber) VALUES (2, '1A'), (2, '1B'), (2, '1C');
-
--- Chèn Vé mẫu (Khách 01 đặt chuyến VN123 nhưng chưa chọn ghế)
-INSERT INTO Tickets (FlightID, PassengerID, SeatID, IsCheckedIn, Status) 
-VALUES (1, 3, NULL, 0, N'Booked');
-
--- Chèn Vé mẫu (Khách 02 đặt chuyến VN123 và đã có ghế A1)
-INSERT INTO Tickets (FlightID, PassengerID, SeatID, IsCheckedIn, Status) 
-VALUES (1, 4, 1, 0, N'Booked');
-UPDATE Seats SET IsOccupied = 1 WHERE SeatID = 1; -- Đánh dấu ghế A1 đã hết chỗ
-
-GO
--- Thông báo hoàn tất
-PRINT 'Database AirportManagement đã được khởi tạo thành công!';
+INSERT INTO Flights (FlightNumber, DepartureCity, DestinationCity, DepartureTime, ArrivalTime, Gate, TotalSeats, Status) 
+VALUES ('VN123', N'Hà Nội', N'Sài Gòn', '2026-05-10 08:00:00', '2026-05-10 10:00:00', 'G1', 100, N'Scheduled');
