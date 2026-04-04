@@ -49,7 +49,6 @@ public class FlightsDashboard extends JFrame {
         btnAdd = new JButton("Thêm chuyến bay");
         btnUpdate = new JButton("Chỉnh sửa chuyến bay");
         btnDelete = new JButton("Hủy chuyến bay");
-        btnBackAdmin = new JButton("Quay về trang Admin");
 
         sortComboBox = new JComboBox<>(new String[] { "Thời gian", "Mã Chuyến Bay" });
 
@@ -58,17 +57,6 @@ public class FlightsDashboard extends JFrame {
         controlPanel.add(btnAdd);
         controlPanel.add(btnUpdate);
         controlPanel.add(btnDelete);
-
-        // CHỈ HIỆN NÚT NẾU ĐI TỪ ADMIN
-        if (roleID == 1) { // chỉ Admin mới thấy
-            controlPanel.add(btnBackAdmin);
-        }
-
-        // Xử lý quay lại Admin
-        btnBackAdmin.addActionListener(e -> {
-            new AdminDashboard().setVisible(true);
-            dispose();
-        });
 
         add(controlPanel, BorderLayout.NORTH);
         add(scrollPane, BorderLayout.CENTER);
