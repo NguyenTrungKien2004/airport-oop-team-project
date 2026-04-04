@@ -11,23 +11,23 @@ public class FlightDAO extends DBContext {
     // 1. Lấy toàn bộ danh sách chuyến bay
     public List<Flight> getAllFlights() {
         List<Flight> list = new ArrayList<>();
-        // Câu lệnh SQL đã cập nhật tên cột: FlightNumber, DepartureCity, DestinationCity...
+        // Câu lệnh SQL đã cập nhật tên cột: FlightNumber, DepartureCity,
+        // DestinationCity...
         String sql = "SELECT * FROM Flights";
         try {
             PreparedStatement ps = connection.prepareStatement(sql);
             ResultSet rs = ps.executeQuery();
             while (rs.next()) {
                 list.add(new Flight(
-                    rs.getInt("FlightID"),
-                    rs.getString("FlightNumber"), // Đã đổi từ FlightCode
-                    rs.getString("DepartureCity"), // Đã đổi từ Departure
-                    rs.getString("DestinationCity"), // Đã đổi từ Arrival
-                    rs.getTimestamp("DepartureTime"),
-                    rs.getTimestamp("ArrivalTime"),
-                    rs.getString("Gate"),
-                    rs.getInt("TotalSeats"),
-                    rs.getString("Status")
-                ));
+                        rs.getInt("FlightID"),
+                        rs.getString("FlightNumber"), // Đã đổi từ FlightCode
+                        rs.getString("DepartureCity"), // Đã đổi từ Departure
+                        rs.getString("DestinationCity"), // Đã đổi từ Arrival
+                        rs.getTimestamp("DepartureTime"),
+                        rs.getTimestamp("ArrivalTime"),
+                        rs.getString("Gate"),
+                        rs.getInt("TotalSeats"),
+                        rs.getString("Status")));
             }
         } catch (SQLException e) {
             e.printStackTrace();
@@ -81,7 +81,8 @@ public class FlightDAO extends DBContext {
             ps.setInt(1, id);
             return ps.executeUpdate() > 0;
         } catch (SQLException e) {
-            // Lưu ý: Nếu chuyến bay đã có người đặt vé, SQL sẽ chặn không cho xóa (lỗi khóa ngoại)
+            // Lưu ý: Nếu chuyến bay đã có người đặt vé, SQL sẽ chặn không cho xóa (lỗi khóa
+            // ngoại)
             e.printStackTrace();
         }
         return false;
@@ -90,28 +91,37 @@ public class FlightDAO extends DBContext {
     // 5. Sắp xếp danh sách (Sử dụng cho JComboBox sắp xếp)
     public List<Flight> getFlightsSorted(String criteria) {
         List<Flight> list = new ArrayList<>();
-        String column = "DepartureTime"; // Mặc định sắp xếp theo giờ đi
-        
+        String sql = "";
         // Chuyển đổi lựa chọn từ giao diện sang tên cột SQL
-        if (criteria.equals("Flight Number")) column = "FlightNumber";
-        else if (criteria.equals("Destination")) column = "DestinationCity";
 
-        String sql = "SELECT * FROM Flights ORDER BY " + column;
+        if (criteria.equals("Mã Chuyến Bay")) {
+            sql = "SELECT * FROM Flights " +
+                    "ORDER BY " +
+                    "CASE WHEN PATINDEX('%[0-9]%', FlightNumber) > 0 " +
+                    "THEN LEFT(FlightNumber, PATINDEX('%[0-9]%', FlightNumber) - 1) " +
+                    "ELSE FlightNumber END, " +
+                    "CASE WHEN PATINDEX('%[0-9]%', FlightNumber) > 0 " +
+                    "THEN CAST(SUBSTRING(FlightNumber, PATINDEX('%[0-9]%', FlightNumber), LEN(FlightNumber)) AS INT) " +
+                    "ELSE 0 END";
+        } else if (criteria.equals("Điểm Đến")) {
+            sql = "SELECT * FROM Flights ORDER BY DestinationCity";
+        } else {
+            sql = "SELECT * FROM Flights ORDER BY DepartureTime";
+        }
         try {
             PreparedStatement ps = connection.prepareStatement(sql);
             ResultSet rs = ps.executeQuery();
             while (rs.next()) {
                 list.add(new Flight(
-                    rs.getInt("FlightID"),
-                    rs.getString("FlightNumber"),
-                    rs.getString("DepartureCity"),
-                    rs.getString("DestinationCity"),
-                    rs.getTimestamp("DepartureTime"),
-                    rs.getTimestamp("ArrivalTime"),
-                    rs.getString("Gate"),
-                    rs.getInt("TotalSeats"),
-                    rs.getString("Status")
-                ));
+                        rs.getInt("FlightID"),
+                        rs.getString("FlightNumber"),
+                        rs.getString("DepartureCity"),
+                        rs.getString("DestinationCity"),
+                        rs.getTimestamp("DepartureTime"),
+                        rs.getTimestamp("ArrivalTime"),
+                        rs.getString("Gate"),
+                        rs.getInt("TotalSeats"),
+                        rs.getString("Status")));
             }
         } catch (SQLException e) {
             e.printStackTrace();

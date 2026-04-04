@@ -25,7 +25,7 @@ public class AuthController {
                 if (user.getRoleID() == 1) { // Admin
                     new AdminDashboard().setVisible(true);
                 } else if (user.getRoleID() == 2) { /// Bổ Sung của TIẾN
-                    FlightsDashboard staffView = new FlightsDashboard(); //
+                    FlightsDashboard staffView = new FlightsDashboard(2); // Truyền roleID của Staff
                     new FlightController(staffView); /// Kết nối Controller của Tiến vào
                     staffView.setVisible(true); //
                 } else { // Nhân viên hoặc Khách

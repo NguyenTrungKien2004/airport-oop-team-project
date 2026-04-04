@@ -54,17 +54,18 @@ public class FlightController {
                 JTextField txtStatus = new JTextField();
 
                 Object[] message = {
-                        "Flight Number:", txtFlightNo,
-                        "From:", txtFrom,
-                        "To:", txtTo,
-                        "Departure (yyyy-MM-dd HH:mm:ss):", txtDeparture,
-                        "Arrival (yyyy-MM-dd HH:mm:ss):", txtArrival,
-                        "Gate:", txtGate,
-                        "Total Seats:", txtSeats,
-                        "Status:", txtStatus
+                        "Mã số chuyến bay:", txtFlightNo,
+                        "Điểm đi:", txtFrom,
+                        "Điểm đến:", txtTo,
+                        "Thời gian khởi hành", txtDeparture,
+                        "Thời gian ", txtArrival,
+                        "Cổng:", txtGate,
+                        "Tổng số ghế:", txtSeats,
+                        "Trạng thái:", txtStatus
                 };
 
-                int option = JOptionPane.showConfirmDialog(null, message, "Add Flight", JOptionPane.OK_CANCEL_OPTION);
+                int option = JOptionPane.showConfirmDialog(null, message, "Thêm chuyến bay",
+                        JOptionPane.OK_CANCEL_OPTION);
                 if (option == JOptionPane.OK_OPTION) {
                     Flight f = new Flight(
                             0,
@@ -78,14 +79,14 @@ public class FlightController {
                             txtStatus.getText());
 
                     if (dao.addFlight(f)) {
-                        JOptionPane.showMessageDialog(null, "Add successful!");
+                        JOptionPane.showMessageDialog(null, "Thêm thành công!");
                         refreshTable(dao.getAllFlights());
                     } else {
-                        JOptionPane.showMessageDialog(null, "Add failed!");
+                        JOptionPane.showMessageDialog(null, "Thêm thất bại!");
                     }
                 }
             } catch (Exception ex) {
-                JOptionPane.showMessageDialog(null, "Invalid input!");
+                JOptionPane.showMessageDialog(null, "Giá trị nhập vào không hợp lệ!");
             }
         });
 
@@ -93,7 +94,7 @@ public class FlightController {
             int row = view.getFlightTable().getSelectedRow();
 
             if (row == -1) {
-                JOptionPane.showMessageDialog(null, "Please select a flight!");
+                JOptionPane.showMessageDialog(null, "Vui lòng chọn một chuyến bay!");
                 return;
             }
 
@@ -106,13 +107,13 @@ public class FlightController {
                 JTextField txtStatus = new JTextField(view.getTableModel().getValueAt(row, 7).toString());
 
                 Object[] message = {
-                        "Departure (yyyy-MM-dd HH:mm:ss):", txtDeparture,
-                        "Arrival (yyyy-MM-dd HH:mm:ss):", txtArrival,
-                        "Gate:", txtGate,
-                        "Status:", txtStatus
+                        "Thời gian khởi hành:", txtDeparture,
+                        "Thời gian đến:", txtArrival,
+                        "Cổng:", txtGate,
+                        "Trạng thái:", txtStatus
                 };
 
-                int option = JOptionPane.showConfirmDialog(null, message, "Reschedule Flight",
+                int option = JOptionPane.showConfirmDialog(null, message, "Chỉnh sửa chuyến bay",
                         JOptionPane.OK_CANCEL_OPTION);
 
                 if (option == JOptionPane.OK_OPTION) {
@@ -126,15 +127,15 @@ public class FlightController {
                             txtStatus.getText());
 
                     if (dao.updateFlight(f)) {
-                        JOptionPane.showMessageDialog(null, "Update successful!");
+                        JOptionPane.showMessageDialog(null, "Cập nhật thành công!");
                         refreshTable(dao.getAllFlights());
                     } else {
-                        JOptionPane.showMessageDialog(null, "Update failed!");
+                        JOptionPane.showMessageDialog(null, "Cập nhật thất bại!");
                     }
                 }
 
             } catch (Exception ex) {
-                JOptionPane.showMessageDialog(null, "Invalid input!");
+                JOptionPane.showMessageDialog(null, "Giá trị nhập vào không hợp lệ!");
             }
         });
     }
