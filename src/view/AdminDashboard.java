@@ -2,6 +2,9 @@ package view;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
+
+import controller.FlightController;
+
 import java.awt.*;
 import java.util.List;
 import dao.UserDAO;
@@ -26,10 +29,10 @@ public class AdminDashboard extends JFrame {
         add(lbl, BorderLayout.NORTH);
 
         // 2. Bảng hiển thị
-        String[] columns = {"ID", "Tài khoản", "Mật khẩu", "Họ tên", "Quyền"};
+        String[] columns = { "ID", "Tài khoản", "Mật khẩu", "Họ tên", "Quyền" };
         model = new DefaultTableModel(columns, 0);
         table = new JTable(model);
-        loadData(); 
+        loadData();
         add(new JScrollPane(table), BorderLayout.CENTER);
 
         // 3. Các nút bấm
@@ -37,10 +40,14 @@ public class AdminDashboard extends JFrame {
         JButton btnAdd = new JButton("Thêm mới");
         JButton btnDelete = new JButton("Xóa User");
         JButton btnReload = new JButton("Làm mới bảng");
+        // cập nhật thêm nút để cho Admin có thể vào phần chức năng quản lý chuyến bay
+        JButton btnQlcb = new JButton("Quản lý chuyến bay");
 
         pnlBtns.add(btnAdd);
         pnlBtns.add(btnDelete);
         pnlBtns.add(btnReload);
+        // thêm nút vào panel
+        pnlBtns.add(btnQlcb);
         add(pnlBtns, BorderLayout.SOUTH);
 
         // --- XỬ LÝ SỰ KIỆN ---
@@ -70,7 +77,7 @@ public class AdminDashboard extends JFrame {
             String pass = JOptionPane.showInputDialog(this, "Nhập Password:");
             String name = JOptionPane.showInputDialog(this, "Nhập Họ tên:");
             String role = JOptionPane.showInputDialog(this, "Nhập Quyền (1:Admin, 2:Staff, 3:Passenger):");
-            
+
             if (user != null && pass != null) {
                 User u = new User(0, user, pass, name, Integer.parseInt(role));
                 if (dao.addUser(u)) {
@@ -82,13 +89,21 @@ public class AdminDashboard extends JFrame {
 
         // Nút Làm mới
         btnReload.addActionListener(e -> loadData());
+
+        // Nút Quản lý chuyến bay
+        btnQlcb.addActionListener(e -> {
+            FlightsDashboard fd = new FlightsDashboard(1); // Truyền roleID của Admin
+            new FlightController(fd);
+            fd.setVisible(true);
+        });
     }
 
     private void loadData() {
         model.setRowCount(0); // Xóa dữ liệu cũ trên bảng
         List<User> list = dao.getAllUsers();
         for (User u : list) {
-            model.addRow(new Object[]{u.getUserID(), u.getUsername(), u.getPassword(), u.getFullName(), u.getRoleID()});
+            model.addRow(
+                    new Object[] { u.getUserID(), u.getUsername(), u.getPassword(), u.getFullName(), u.getRoleID() });
         }
     }
 }
