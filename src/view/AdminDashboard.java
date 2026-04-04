@@ -90,11 +90,31 @@ public class AdminDashboard extends JFrame {
     }
 
     private void loadData() {
-        model.setRowCount(0); // Xóa dữ liệu cũ trên bảng
-        List<User> list = dao.getAllUsers();
-        for (User u : list) {
-            model.addRow(
-                    new Object[] { u.getUserID(), u.getUsername(), u.getPassword(), u.getFullName(), u.getRoleID() });
+    model.setRowCount(0); // Xóa dữ liệu cũ trên bảng
+    List<User> list = dao.getAllUsers();
+    
+    for (User u : list) {
+        // --- BẮT ĐẦU ĐOẠN ĐỔI SỐ SANG CHỮ ---
+        String tenQuyen = "";
+        if (u.getRoleID() == 1) {
+            tenQuyen = "Quản trị viên";
+        } else if (u.getRoleID() == 2) {
+            tenQuyen = "Nhân viên";
+        } else if (u.getRoleID() == 3) {
+            tenQuyen = "Hành khách";
+        } else {
+            tenQuyen = "Chưa xác định";
         }
+        // ------------------------------------
+
+        // Thêm dòng vào bảng (Thay u.getRoleID() bằng biến tenQuyen)
+        model.addRow(new Object[]{
+            u.getUserID(), 
+            u.getUsername(), 
+            u.getPassword(), 
+            u.getFullName(), 
+            tenQuyen // Chỗ này sẽ hiện chữ thay vì số 1, 2, 3
+        });
     }
+}
 }

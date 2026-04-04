@@ -3,6 +3,7 @@ package controller;
 import dao.UserDAO;
 import model.User;
 import view.LoginView;
+import view.RegisterView;
 import view.FlightsDashboard;
 import view.AdminDashboard;
 import javax.swing.JOptionPane;
@@ -15,26 +16,37 @@ public class AuthController {
         this.view = view;
         this.dao = new UserDAO();
 
+        // 1. Xử lý khi nhấn nút Đăng nhập
         this.view.btnLogin.addActionListener(e -> {
             String u = view.txtUser.getText();
             String p = new String(view.txtPass.getPassword());
 
             User user = dao.checkLogin(u, p);
             if (user != null) {
-                view.dispose(); // Đóng Login
-                if (user.getRoleID() == 1) { // Admin
+                if (user.getRoleID() == 1) { // ADMIN
+                    view.dispose();
                     new AdminDashboard().setVisible(true);
-                } else if (user.getRoleID() == 2) { /// Bổ Sung của TIẾN
-                    FlightsDashboard staffView = new FlightsDashboard(2); // Truyền roleID của Staff
-                    new FlightController(staffView); /// Kết nối Controller của Tiến vào
-                    staffView.setVisible(true); //
-                } else { // Nhân viên hoặc Khách
-                    JOptionPane.showMessageDialog(null,
-                            "Đăng nhập thành công! Chức năng cho Nhân viên/Khách sẽ cập nhật sau.");
+                } 
+                else if (user.getRoleID() == 2) { // NHÂN VIÊN (Phần của Tiến)
+                    view.dispose();
+                    // ĐÃ SỬA: Truyền RoleID vào để hết lỗi đỏ
+                    FlightsDashboard staffView = new FlightsDashboard(user.getRoleID());
+                    new FlightController(staffView);
+                    staffView.setVisible(true);
+                } 
+                else if (user.getRoleID() == 3) { // KHÁCH HÀNG
+                    JOptionPane.showMessageDialog(view, 
+                        "Chào mừng Khách hàng: " + user.getFullName() + 
+                        "\nChức năng đặt vé đang được phát triển.");
                 }
             } else {
-                JOptionPane.showMessageDialog(view, "Sai tài khoản hoặc mật khẩu!");
+                JOptionPane.showMessageDialog(view, "Tài khoản hoặc mật khẩu không chính xác!");
             }
+        });
+
+        // 2. Mở giao diện Đăng ký
+        this.view.btnGoRegister.addActionListener(e -> {
+            new RegisterView().setVisible(true);
         });
     }
 }
