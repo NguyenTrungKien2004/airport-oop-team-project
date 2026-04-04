@@ -85,10 +85,35 @@ public class AdminDashboard extends JFrame {
     }
 
     private void loadData() {
-        model.setRowCount(0); // Xóa dữ liệu cũ trên bảng
-        List<User> list = dao.getAllUsers();
-        for (User u : list) {
-            model.addRow(new Object[]{u.getUserID(), u.getUsername(), u.getPassword(), u.getFullName(), u.getRoleID()});
+    model.setRowCount(0); // Xóa dữ liệu cũ trên bảng
+    List<User> list = dao.getAllUsers();
+    
+    for (User u : list) {
+        // Chuyển đổi số RoleID sang chữ hiển thị
+        String roleStr = "";
+        switch (u.getRoleID()) {
+            case 1:
+                roleStr = "Quản trị viên";
+                break;
+            case 2:
+                roleStr = "Nhân viên";
+                break;
+            case 3:
+                roleStr = "Hành khách";
+                break;
+            default:
+                roleStr = "Khác (" + u.getRoleID() + ")";
+                break;
         }
+
+        // Thêm vào bảng với biến roleStr thay vì u.getRoleID()
+        model.addRow(new Object[]{
+            u.getUserID(), 
+            u.getUsername(), 
+            u.getPassword(), 
+            u.getFullName(), 
+            roleStr
+        });
     }
+}
 }
