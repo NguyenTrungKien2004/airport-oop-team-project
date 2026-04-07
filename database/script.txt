@@ -44,6 +44,9 @@ INSERT INTO Users (Username, Password, FullName, RoleID) VALUES
 
 INSERT INTO Flights (FlightNumber, DepartureCity, DestinationCity, DepartureTime, ArrivalTime, Gate, TotalSeats, Status) 
 VALUES ('VN123', N'Hà Nội', N'Sài Gòn', '2026-05-10 08:00:00', '2026-05-10 10:00:00', 'G1', 100, N'Scheduled');
+
+
+
 CREATE TABLE Tickets (
     TicketID INT PRIMARY KEY IDENTITY(1,1),
     FlightID INT FOREIGN KEY REFERENCES Flights(FlightID),
