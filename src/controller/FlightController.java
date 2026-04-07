@@ -39,6 +39,69 @@ public class FlightController {
             }
         });
 
+        // THỰC HIỆN CHECK-IN & GÁN GHẾ
+        view.getBtnCheckIn().addActionListener(e -> {
+            int row = view.getFlightTable().getSelectedRow();
+            if (row == -1) {
+                JOptionPane.showMessageDialog(null, "Vui lòng chọn 1 chuyến bay để Check-in!");
+                return;
+            }
+
+            int flightID = (int) view.getTableModel().getValueAt(row, 0);
+            String status = view.getTableModel().getValueAt(row, 7).toString();
+            String flightNo = view.getTableModel().getValueAt(row, 1).toString();
+
+            // 1. Kiểm tra trạng thái chuyến bay (Rule)
+            if (!status.equalsIgnoreCase("Boarding") && !status.equalsIgnoreCase("Delayed")) {
+                JOptionPane.showMessageDialog(null, "Chuyến bay " + flightNo + " hiện đang '" + status + "'. Không thể mở quầy Check-in!", "Từ chối Check-in", JOptionPane.WARNING_MESSAGE);
+                return;
+            }
+
+            // 2. Hiển thị Popup nhập User và Gán ghế
+            JTextField txtUser = new JTextField();
+            JTextField txtSeat = new JTextField("12A");
+            Object[] message = {
+                "Nhập tên đăng nhập Hành khách (Đã mua vé):", txtUser,
+                "Chỉ định Ghế (Ví dụ: 12A, 14F):", txtSeat
+            };
+
+            int option = JOptionPane.showConfirmDialog(null, message, "Check-in cho chuyến " + flightNo, JOptionPane.OK_CANCEL_OPTION);
+            if (option == JOptionPane.OK_OPTION) {
+                String username = txtUser.getText().trim();
+                String seat = txtSeat.getText().trim();
+                
+                if (username.isEmpty() || seat.isEmpty()) {
+                    JOptionPane.showMessageDialog(null, "Tên hành khách và Số ghế không được để trống!");
+                    return;
+                }
+
+                dao.CheckInDAO checkInDAO = new dao.CheckInDAO();
+                int userID = checkInDAO.getUserIDByUsername(username);
+
+                if (userID == -1) {
+                    JOptionPane.showMessageDialog(null, "Không tìm thấy Hành khách nào tên '" + username + "' trong hệ thống!", "Lỗi xác thực", JOptionPane.ERROR_MESSAGE);
+                    return;
+                }
+
+                if (checkInDAO.hasCheckedIn(flightID, userID)) {
+                    JOptionPane.showMessageDialog(null, "Hành khách '" + username + "' đã được Check-in rồi!", "Thông báo", JOptionPane.WARNING_MESSAGE);
+                    return;
+                }
+
+                if (!checkInDAO.isSeatAvailable(flightID, seat)) {
+                    JOptionPane.showMessageDialog(null, "Ghế '" + seat + "' đã có hành khách khác chiếm chỗ! Vui lòng chỉ định ghế khác.", "Lỗi gán ghế", JOptionPane.ERROR_MESSAGE);
+                    return;
+                }
+
+                // 3. Thực hiện Gán ghế & Cập nhật Check-in
+                if (checkInDAO.performCheckIn(flightID, userID, seat)) {
+                    JOptionPane.showMessageDialog(null, "✅ Check-in Thành công!\nKhách: " + username + "\nGhế: " + seat + "\nLên chuyến bay: " + flightNo);
+                } else {
+                    JOptionPane.showMessageDialog(null, "Lỗi khi cập nhật ghế hoặc Hành khách này chưa mua vé cho chuyến bay này (Dữ liệu vé rỗng).", "Lỗi CSDL", JOptionPane.ERROR_MESSAGE);
+                }
+            }
+        });
+
         // Add Logic for Add and Update buttons similarly using Dialogs for input
 
         // ADD FLIGHT

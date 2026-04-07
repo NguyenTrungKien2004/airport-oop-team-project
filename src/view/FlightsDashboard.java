@@ -7,7 +7,7 @@ import java.awt.*;
 public class FlightsDashboard extends JFrame {
     private JTable flightTable;
     private DefaultTableModel tableModel;
-    private JButton btnAdd, btnUpdate, btnDelete, btnBackAdmin;
+    private JButton btnAdd, btnUpdate, btnDelete, btnCheckIn, btnBackAdmin;
     private JComboBox<String> sortComboBox;
 
     public FlightsDashboard(int roleID) {
@@ -49,6 +49,7 @@ public class FlightsDashboard extends JFrame {
         btnAdd = new JButton("Thêm chuyến bay");
         btnUpdate = new JButton("Chỉnh sửa chuyến bay");
         btnDelete = new JButton("Hủy chuyến bay");
+        btnCheckIn = new JButton("Check-in & Gán ghế");
 
         sortComboBox = new JComboBox<>(new String[] { "Thời gian", "Mã Chuyến Bay" });
 
@@ -57,6 +58,7 @@ public class FlightsDashboard extends JFrame {
         controlPanel.add(btnAdd);
         controlPanel.add(btnUpdate);
         controlPanel.add(btnDelete);
+        controlPanel.add(btnCheckIn);
 
         add(controlPanel, BorderLayout.NORTH);
         add(scrollPane, BorderLayout.CENTER);
@@ -80,6 +82,10 @@ public class FlightsDashboard extends JFrame {
 
     public JButton getBtnDelete() {
         return btnDelete;
+    }
+
+    public JButton getBtnCheckIn() {
+        return btnCheckIn;
     }
 
     public JButton getBtnBackAdmin() {

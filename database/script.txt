@@ -1,7 +1,10 @@
 USE master;
 GO
 IF EXISTS (SELECT * FROM sys.databases WHERE name = 'AirportManagement')
+BEGIN
+    ALTER DATABASE AirportManagement SET SINGLE_USER WITH ROLLBACK IMMEDIATE;
     DROP DATABASE AirportManagement;
+END
 GO
 CREATE DATABASE AirportManagement;
 GO
@@ -41,7 +44,14 @@ INSERT INTO Users (Username, Password, FullName, RoleID) VALUES
 
 INSERT INTO Flights (FlightNumber, DepartureCity, DestinationCity, DepartureTime, ArrivalTime, Gate, TotalSeats, Status) 
 VALUES ('VN123', N'Hà Nội', N'Sài Gòn', '2026-05-10 08:00:00', '2026-05-10 10:00:00', 'G1', 100, N'Scheduled');
+CREATE TABLE Tickets (
+    TicketID INT PRIMARY KEY IDENTITY(1,1),
+    FlightID INT FOREIGN KEY REFERENCES Flights(FlightID),
+    UserID INT FOREIGN KEY REFERENCES Users(UserID),
+    SeatNumber VARCHAR(10) NOT NULL,
+    IsCheckedIn BIT DEFAULT 0 -- 0 Code cho Hành khách chưa Check-in
+);
 
-
-
-
+-- Thêm một vé mẫu cho khach01 vào chuyến bay VN123 (Chưa check-in, gán ghế rỗng hoặc đã chọn)
+INSERT INTO Tickets (FlightID, UserID, SeatNumber, IsCheckedIn) 
+VALUES (1, 3, '12A', 0);

@@ -62,6 +62,7 @@ public class UserDAO {
             return ps.executeUpdate() > 0;
         } catch (Exception e) {
             e.printStackTrace();
+            javax.swing.JOptionPane.showMessageDialog(null, "Lỗi Database thực sự: " + e.getMessage(), "Lỗi Hệ thống", javax.swing.JOptionPane.ERROR_MESSAGE);
             return false;
         }
     }
