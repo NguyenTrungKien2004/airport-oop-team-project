@@ -3,6 +3,7 @@ package controller;
 import dao.UserDAO;
 import model.User;
 import view.LoginView;
+import view.PassengerFrame;
 import view.RegisterView;
 import view.FlightsDashboard;
 import view.AdminDashboard;
@@ -35,9 +36,15 @@ public class AuthController {
                     staffView.setVisible(true);
                 } 
                 else if (user.getRoleID() == 3) { // KHÁCH HÀNG
-                    JOptionPane.showMessageDialog(view, 
-                        "Chào mừng Khách hàng: " + user.getFullName() + 
-                        "\nChức năng đặt vé đang được phát triển.");
+                    // 1. Đóng cửa sổ đăng nhập hiện tại
+                    view.dispose();
+                    PassengerFrame pFrame = new PassengerFrame(user.getUserID());
+                     // Ở đây bạn cần tạo thêm BookingController để xử lý logic cho nút bấm
+                     new BookingController(pFrame); 
+                    pFrame.setVisible(true); 
+    
+    // 4. Hiển thị cửa sổ lên
+    pFrame.setVisible(true);
                 }
             } else {
                 JOptionPane.showMessageDialog(view, "Tài khoản hoặc mật khẩu không chính xác!");
