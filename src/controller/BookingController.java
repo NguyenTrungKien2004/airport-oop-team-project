@@ -5,21 +5,29 @@ import dao.FlightDAO;
 import model.Flight;
 import model.Ticket;
 import view.PassengerFrame;
+import view.LoginView;
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class BookingController {
     private PassengerFrame view;
     private TicketDAO ticketDAO;
     private FlightDAO flightDAO;
+    private List<Flight> allFlights; // Lưu toàn bộ danh sách để dùng khi lọc
 
     public BookingController(PassengerFrame view) {
         this.view = view;
         this.ticketDAO = new TicketDAO();
         this.flightDAO = new FlightDAO();
-
+        allFlights = flightDAO.getAllFlights();
         loadData();
+
+        // TÌM KIẾM CHUYẺN BAY
+        this.view.btnSearch.addActionListener(e -> filterFlights());
+        // Cho phép nhấn Enter ở ô tìm kiếm để trigger search
+        this.view.txtSearch.addActionListener(e -> filterFlights());
 
         // XỬ LÝ ĐẶT VÉ + CHỌN GHẾ
         this.view.btnBook.addActionListener(e -> {
@@ -62,15 +70,53 @@ public class BookingController {
         });
 
         this.view.btnRefresh.addActionListener(e -> loadData());
+
+        // ĐĂNG XUẤT
+        this.view.btnLogout.addActionListener(e -> {
+            int confirm = JOptionPane.showConfirmDialog(view, "Bạn có chắc muốn đăng xuất?", "Đăng xuất", JOptionPane.YES_NO_OPTION);
+            if (confirm == JOptionPane.YES_OPTION) {
+                view.dispose();
+                new LoginView().setVisible(true);
+            }
+        });
+    }
+
+    // Lọc danh sách chuyến bay theo từ khoá
+    private void filterFlights() {
+        String keyword = view.txtSearch.getText().trim().toLowerCase();
+        List<Flight> filtered;
+        if (keyword.isEmpty()) {
+            filtered = allFlights;
+        } else {
+            filtered = allFlights.stream()
+                .filter(f -> f.getDepartureCity().toLowerCase().contains(keyword)
+                          || f.getDestinationCity().toLowerCase().contains(keyword)
+                          || f.getFlightNumber().toLowerCase().contains(keyword))
+                .collect(Collectors.toList());
+        }
+        DefaultTableModel m = new DefaultTableModel(new String[]{"ID", "Số hiệu", "Đi", "Đến", "Giờ đi", "Trạng thái"}, 0);
+        for (Flight f : filtered) {
+            m.addRow(new Object[]{f.getFlightID(), f.getFlightNumber(), f.getDepartureCity(), f.getDestinationCity(), f.getDepartureTime(), f.getStatus()});
+        }
+        view.tblFlights.setModel(m);
+        // Ẩn cột ID
+        view.tblFlights.getColumnModel().getColumn(0).setMinWidth(0);
+        view.tblFlights.getColumnModel().getColumn(0).setMaxWidth(0);
     }
 
     private void loadData() {
+        // Cập nhật allFlights để search luôn có dữ liệu mới
+        allFlights = flightDAO.getAllFlights();
+
         // Load bảng Chuyến bay
-        DefaultTableModel m1 = new DefaultTableModel(new String[]{"ID", "Số hiệu", "Đi", "Đến", "Giờ đi"}, 0);
-        for (Flight f : flightDAO.getAllFlights()) {
-            m1.addRow(new Object[]{f.getFlightID(), f.getFlightNumber(), f.getDepartureCity(), f.getDestinationCity(), f.getDepartureTime()});
+        DefaultTableModel m1 = new DefaultTableModel(new String[]{"ID", "Số hiệu", "Đi", "Đến", "Giờ đi", "Trạng thái"}, 0);
+        for (Flight f : allFlights) {
+            m1.addRow(new Object[]{f.getFlightID(), f.getFlightNumber(), f.getDepartureCity(), f.getDestinationCity(), f.getDepartureTime(), f.getStatus()});
         }
         view.tblFlights.setModel(m1);
+        // Ẩn cột ID khỏi màn hình nhưng vẫn dùng được để đặt vé
+        view.tblFlights.getColumnModel().getColumn(0).setMinWidth(0);
+        view.tblFlights.getColumnModel().getColumn(0).setMaxWidth(0);
 
         // Load bảng Vé của tôi (Có cột Số Ghế)
         DefaultTableModel m2 = new DefaultTableModel(new String[]{"Mã vé", "Số hiệu", "Số ghế", "Từ", "Đến", "Trạng thái"}, 0);

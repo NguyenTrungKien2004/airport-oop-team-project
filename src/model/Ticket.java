@@ -11,11 +11,19 @@ public class Ticket {
     private String destinationCity;
     private String departureTime;
 
+    private String passengerName;
+
     public Ticket() {}
 
     // Getters và Setters
     public int getTicketID() { return ticketID; }
     public void setTicketID(int ticketID) { this.ticketID = ticketID; }
+    public int getUserID() { return userID; }
+    public void setUserID(int userID) { this.userID = userID; }
+    public int getFlightID() { return flightID; }
+    public void setFlightID(int flightID) { this.flightID = flightID; }
+    public String getPassengerName() { return passengerName; }
+    public void setPassengerName(String passengerName) { this.passengerName = passengerName; }
     public String getSeatNumber() { return seatNumber; }
     public void setSeatNumber(String seatNumber) { this.seatNumber = seatNumber; }
     public String getStatus() { return status; }

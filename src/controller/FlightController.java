@@ -3,6 +3,7 @@ package controller;
 import dao.FlightDAO;
 import model.Flight;
 import view.FlightsDashboard;
+import view.LoginView;
 
 import javax.swing.JOptionPane;
 import javax.swing.JTextField;
@@ -137,6 +138,47 @@ public class FlightController {
             } catch (Exception ex) {
                 JOptionPane.showMessageDialog(null, "Giá trị nhập vào không hợp lệ!");
             }
+        });
+
+        // ĐĂNG XUẤT
+        view.getBtnLogout().addActionListener(e -> {
+            int confirm = javax.swing.JOptionPane.showConfirmDialog(view, "Bạn có chắc muốn đăng xuất?", "Đăng xuất", javax.swing.JOptionPane.YES_NO_OPTION);
+            if (confirm == javax.swing.JOptionPane.YES_OPTION) {
+                view.dispose();
+                new LoginView().setVisible(true);
+            }
+        });
+
+        view.getBtnCheckIn().addActionListener(e -> {
+            int row = view.getFlightTable().getSelectedRow();
+            if (row == -1) {
+                JOptionPane.showMessageDialog(null, "Vui lòng chọn một chuyến bay để check-in!");
+                return;
+            }
+
+            // Get the flight info
+            int flightID = (int) view.getTableModel().getValueAt(row, 0);
+            String flightNo = view.getTableModel().getValueAt(row, 1).toString();
+            String from = view.getTableModel().getValueAt(row, 2).toString();
+            String to = view.getTableModel().getValueAt(row, 3).toString();
+            String status = view.getTableModel().getValueAt(row, 7).toString();
+
+            if (!status.equalsIgnoreCase("Boarding") && !status.equalsIgnoreCase("Delayed")) {
+                JOptionPane.showMessageDialog(null, "Từ chối check-in: Trạng thái chuyến bay không hợp lệ!\n(Chỉ cho phép Check-in khi Boarding hoặc Delayed)", "Lỗi", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+
+            // Construct currentFlight for CheckInView
+            Flight currentFlight = new Flight();
+            currentFlight.setFlightID(flightID);
+            currentFlight.setFlightNumber(flightNo);
+            currentFlight.setDepartureCity(from);
+            currentFlight.setDestinationCity(to);
+
+            // Open Check-in View
+            view.CheckInView checkInView = new view.CheckInView(currentFlight);
+            new controller.CheckInController(checkInView);
+            checkInView.setVisible(true);
         });
     }
 

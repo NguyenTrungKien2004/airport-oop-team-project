@@ -10,7 +10,7 @@ public class DBContext {
         // Kiểm tra đúng tên Database của bạn là AirportManagement
         String url = "jdbc:sqlserver://localhost:1433;databaseName=AirportManagement;encrypt=true;trustServerCertificate=true";
         String user = "sa";
-        String pass = "123"; // Mật khẩu SQL của Dzung
+        String pass = "Oop2026@"; // Mật khẩu SQL của Dzung
 
         Class.forName("com.microsoft.sqlserver.jdbc.SQLServerDriver");
         return DriverManager.getConnection(url, user, pass);
@@ -21,7 +21,7 @@ public class DBContext {
         try {
             String url = "jdbc:sqlserver://localhost:1433;databaseName=AirportManagement;encrypt=true;trustServerCertificate=true";
             String user = "sa";
-            String pass = "123";
+            String pass = "Oop2026@";
             Class.forName("com.microsoft.sqlserver.jdbc.SQLServerDriver");
             connection = DriverManager.getConnection(url, user, pass);
         } catch (Exception e) {

@@ -5,7 +5,8 @@ import java.awt.*;
 
 public class PassengerFrame extends JFrame {
     public JTable tblFlights, tblMyTickets;
-    public JButton btnBook, btnRefresh, btnDelete;
+    public JButton btnBook, btnRefresh, btnDelete, btnSearch, btnLogout;
+    public JTextField txtSearch;
     private int currentUserID;
 
     public PassengerFrame(int userID) {
@@ -20,7 +21,18 @@ public class PassengerFrame extends JFrame {
         // Tab đặt vé
         JPanel p1 = new JPanel(new BorderLayout());
         tblFlights = new JTable();
+
+        // === THANH TÌM KIẾM ===
+        JPanel searchPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
+        searchPanel.add(new JLabel("Tìm chuyến bay (Điểm đi / Điểm đến):"));
+        txtSearch = new JTextField(20);
+        btnSearch = new JButton("🔍 Tìm kiếm");
+        searchPanel.add(txtSearch);
+        searchPanel.add(btnSearch);
+        // ======================
+
         btnBook = new JButton("Đặt vé & Chọn ghế");
+        p1.add(searchPanel, BorderLayout.NORTH);
         p1.add(new JScrollPane(tblFlights), BorderLayout.CENTER);
         p1.add(btnBook, BorderLayout.SOUTH);
 
@@ -40,7 +52,15 @@ public class PassengerFrame extends JFrame {
         tabs.addTab("Tìm & Đặt vé", p1);
         tabs.addTab("Vé của tôi", p2);
 
+        // === FOOTER: Nút Đăng xuất luôn hiển thị ===
+        btnLogout = new JButton("⬅ Đăng xuất");
+        btnLogout.setForeground(java.awt.Color.RED);
+        JPanel footer = new JPanel(new FlowLayout(FlowLayout.RIGHT));
+        footer.add(btnLogout);
+        // ============================================
+
         add(tabs, BorderLayout.CENTER);
+        add(footer, BorderLayout.SOUTH);
         setLocationRelativeTo(null);
     }
 
