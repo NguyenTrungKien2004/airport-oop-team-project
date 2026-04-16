@@ -36,26 +36,24 @@ public class BookingController {
                 return;
             }
 
-            // --- ĐOẠN XỬ LÝ CHẶN BOARDING ---
-            // Cột index 5 là cột Trạng thái dựa trên hàm loadData() phía dưới
+            // Kiểm tra trạng thái Boarding trước
             String status = view.tblFlights.getValueAt(row, 5).toString();
             if ("Boarding".equalsIgnoreCase(status)) {
-                JOptionPane.showMessageDialog(view, 
-                    "Chuyến bay này đang trong quá trình lên máy bay (Boarding).\nCổng đặt vé đã đóng!", 
-                    "Thông báo", JOptionPane.WARNING_MESSAGE);
+                JOptionPane.showMessageDialog(view, "Chuyến bay đang Boarding, không thể đặt thêm vé!", "Lỗi", JOptionPane.WARNING_MESSAGE);
                 return; 
             }
-            // ---------------------------------
 
             int flightID = (int) view.tblFlights.getValueAt(row, 0);
-            String seat = JOptionPane.showInputDialog(view, "Nhập số ghế muốn chọn (Ví dụ: A01, B15):");
+            String seat = JOptionPane.showInputDialog(view, "Nhập số ghế muốn chọn (1-100):");
 
             if (seat != null && !seat.trim().isEmpty()) {
-                if (ticketDAO.bookTicket(view.getCurrentUserID(), flightID, seat)) {
-                    JOptionPane.showMessageDialog(view, "Đặt vé thành công! Ghế: " + seat);
+                // Thực hiện đặt vé
+                if (ticketDAO.bookTicket(view.getCurrentUserID(), flightID, seat.trim())) {
+                    JOptionPane.showMessageDialog(view, "Đặt vé thành công! Số ghế: " + seat);
                     loadData();
                 } else {
-                    JOptionPane.showMessageDialog(view, "Đặt vé thất bại! (Chuyến bay có thể đã chuyển trạng thái Boarding)");
+                    // Nếu thất bại ở đây, thông báo ghế đã bị trùng
+                    JOptionPane.showMessageDialog(view, "Ghế số [" + seat + "] đã có người đặt. Vui lòng chọn ghế khác!", "Lỗi đặt vé", JOptionPane.ERROR_MESSAGE);
                 }
             } else if (seat != null) {
                 JOptionPane.showMessageDialog(view, "Bạn chưa nhập số ghế!");
@@ -70,7 +68,7 @@ public class BookingController {
                 int confirm = JOptionPane.showConfirmDialog(view, "Bạn có chắc muốn hủy vé này?", "Xác nhận", JOptionPane.YES_NO_OPTION);
                 if (confirm == JOptionPane.YES_OPTION) {
                     if (ticketDAO.deleteTicket(ticketID)) {
-                        JOptionPane.showMessageDialog(view, "Đã xóa vé!");
+                        JOptionPane.showMessageDialog(view, "Đã hủy vé thành công!");
                         loadData();
                     }
                 }
@@ -91,16 +89,11 @@ public class BookingController {
 
     private void filterFlights() {
         String keyword = view.txtSearch.getText().trim().toLowerCase();
-        List<Flight> filtered;
-        if (keyword.isEmpty()) {
-            filtered = allFlights;
-        } else {
-            filtered = allFlights.stream()
+        List<Flight> filtered = keyword.isEmpty() ? allFlights : allFlights.stream()
                 .filter(f -> f.getDepartureCity().toLowerCase().contains(keyword)
                           || f.getDestinationCity().toLowerCase().contains(keyword)
                           || f.getFlightNumber().toLowerCase().contains(keyword))
                 .collect(Collectors.toList());
-        }
         updateFlightTable(filtered);
     }
 

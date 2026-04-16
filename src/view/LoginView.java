@@ -50,7 +50,8 @@ public class LoginView extends JFrame {
         btnGoRegister.setCursor(new Cursor(Cursor.HAND_CURSOR));
         p4.add(btnGoRegister);
         gbc.gridy = 3; add(p4, gbc);
-
+        
+        this.getRootPane().setDefaultButton(btnLogin);
         new AuthController(this); 
     }
 }

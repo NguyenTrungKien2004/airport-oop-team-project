@@ -6,9 +6,8 @@ public class User {
     private String password;
     private String fullName;
     private int roleID;
-
+    
     public User() {}
-
     public User(int userID, String username, String password, String fullName, int roleID) {
         this.userID = userID;
         this.username = username;
@@ -17,8 +16,7 @@ public class User {
         this.roleID = roleID;
     }
 
-    // Các hàm lấy dữ liệu (Getters)
-    // Tiến Bổ sung thêm Setter
+    
     public int getUserID() { return userID; }
     public void setUserID(int userID) { this.userID = userID; }
     

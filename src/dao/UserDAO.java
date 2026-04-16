@@ -7,7 +7,7 @@ import model.User;
 import util.DBContext;
 
 public class UserDAO {
-    // Hàm kiểm tra đăng nhập
+    // kiem tra dang nhap
     public User checkLogin(String user, String pass) {
         try (Connection conn = DBContext.getConnection()) {
             String sql = "SELECT * FROM Users WHERE Username = ? AND Password = ?";
@@ -23,7 +23,7 @@ public class UserDAO {
         return null;
     }
 
-    // Hàm lấy danh sách cho Admin
+    // lay danh sach user
     public List<User> getAllUsers() {
         List<User> list = new ArrayList<>();
         try (Connection conn = DBContext.getConnection()) {

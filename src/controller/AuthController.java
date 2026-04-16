@@ -25,10 +25,10 @@ public class AuthController {
             User user = dao.checkLogin(u, p);
             if (user != null) {
                 if (user.getRoleID() == 1) { // ADMIN
-                    view.dispose();
+                    view.dispose(); 
                     new AdminDashboard().setVisible(true);
                 } 
-                else if (user.getRoleID() == 2) { // NHÂN VIÊN (Phần của Tiến)
+                else if (user.getRoleID() == 2) { // NHÂN VIÊN 
                     view.dispose();
                     // ĐÃ SỬA: Truyền RoleID vào để hết lỗi đỏ
                     FlightsDashboard staffView = new FlightsDashboard(user.getRoleID());
@@ -36,10 +36,8 @@ public class AuthController {
                     staffView.setVisible(true);
                 } 
                 else if (user.getRoleID() == 3) { // KHÁCH HÀNG
-                    // 1. Đóng cửa sổ đăng nhập hiện tại
                     view.dispose();
                     PassengerFrame pFrame = new PassengerFrame(user.getUserID());
-                     // Ở đây bạn cần tạo thêm BookingController để xử lý logic cho nút bấm
                      new BookingController(pFrame); 
                     pFrame.setVisible(true); 
     

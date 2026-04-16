@@ -11,8 +11,7 @@ public class FlightDAO extends DBContext {
     // 1. Lấy toàn bộ danh sách chuyến bay
     public List<Flight> getAllFlights() {
         List<Flight> list = new ArrayList<>();
-        // Câu lệnh SQL đã cập nhật tên cột: FlightNumber, DepartureCity,
-        // DestinationCity...
+        // Câu lệnh SQL đã cập nhật tên cột: FlightNumber, DepartureCity,...
         String sql = "SELECT * FROM Flights";
         try {
             PreparedStatement ps = connection.prepareStatement(sql);
@@ -35,7 +34,7 @@ public class FlightDAO extends DBContext {
         return list;
     }
 
-    // 2. Thêm chuyến bay mới (Sử dụng cho nút Add Flight)
+    // 2. Thêm chuyến bay mới 
     public boolean addFlight(Flight f) {
         String sql = "INSERT INTO Flights (FlightNumber, DepartureCity, DestinationCity, DepartureTime, ArrivalTime, Gate, TotalSeats, Status) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
         try {
@@ -55,7 +54,7 @@ public class FlightDAO extends DBContext {
         return false;
     }
 
-    // 3. Cập nhật giờ bay và trạng thái (Sử dụng cho nút Reschedule)
+    // 3. Cập nhật giờ bay và trạng thái
     public boolean updateFlight(Flight f) {
         // Cập nhật dựa trên FlightID
         String sql = "UPDATE Flights SET DepartureTime = ?, ArrivalTime = ?, Status = ?, Gate = ? WHERE FlightID = ?";
@@ -73,7 +72,7 @@ public class FlightDAO extends DBContext {
         return false;
     }
 
-    // 4. Hủy chuyến bay (Sử dụng cho nút Cancel Flight)
+    // 4. Hủy chuyến bay (Cancel Flight)
     public boolean deleteFlight(int id) {
         String sql = "DELETE FROM Flights WHERE FlightID = ?";
         try {
@@ -81,8 +80,6 @@ public class FlightDAO extends DBContext {
             ps.setInt(1, id);
             return ps.executeUpdate() > 0;
         } catch (SQLException e) {
-            // Lưu ý: Nếu chuyến bay đã có người đặt vé, SQL sẽ chặn không cho xóa (lỗi khóa
-            // ngoại)
             e.printStackTrace();
         }
         return false;

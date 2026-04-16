@@ -49,7 +49,6 @@ public class AdminDashboard extends JFrame {
 
         add(pnlBtns, BorderLayout.SOUTH);
 
-        // --- XỬ LÝ SỰ KIỆN ---
 
         // Nút Xóa
         btnDelete.addActionListener(e -> {
@@ -86,7 +85,7 @@ public class AdminDashboard extends JFrame {
             }
         });
 
-        // Nút Làm mới
+        // btn lam moi bang
         btnReload.addActionListener(e -> loadData());
 
         // Nút Sửa / Phân quyền
@@ -135,7 +134,6 @@ public class AdminDashboard extends JFrame {
                 new LoginView().setVisible(true);
             }
         });
-
     }
 
     private void loadData() {
@@ -143,7 +141,7 @@ public class AdminDashboard extends JFrame {
     List<User> list = dao.getAllUsers();
     
     for (User u : list) {
-        // --- BẮT ĐẦU ĐOẠN ĐỔI SỐ SANG CHỮ ---
+        // Chuyển đổi roleID thành tên quyền
         String tenQuyen = "";
         if (u.getRoleID() == 1) {
             tenQuyen = "Quản trị viên";
@@ -154,7 +152,6 @@ public class AdminDashboard extends JFrame {
         } else {
             tenQuyen = "Chưa xác định";
         }
-        // ------------------------------------
 
         // Thêm dòng vào bảng (Thay u.getRoleID() bằng biến tenQuyen)
         model.addRow(new Object[]{
@@ -162,7 +159,7 @@ public class AdminDashboard extends JFrame {
             u.getUsername(), 
             u.getPassword(), 
             u.getFullName(), 
-            tenQuyen // Chỗ này sẽ hiện chữ thay vì số 1, 2, 3
+            tenQuyen 
         });
     }
 }

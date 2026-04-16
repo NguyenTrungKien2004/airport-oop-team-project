@@ -11,34 +11,32 @@ public class TicketDAO {
 
     public TicketDAO() {
         try {
-            this.conn = new DBContext().getConnection();
+            this.conn = DBContext.getConnection();
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
-    // Chức năng Đặt vé: Có kiểm tra trạng thái Boarding trước khi chèn
+    // 1. Chức năng Đặt vé: CHẶN TRÙNG GHẾ TUYỆT ĐỐI
     public boolean bookTicket(int userID, int flightID, String seatNumber) {
-        // 1. Kiểm tra trạng thái chuyến bay
-        String sqlCheck = "SELECT Status FROM Flights WHERE FlightID = ?";
-        // 2. Lệnh chèn vé
+        // Kiểm tra xem ghế đã có ai đặt trên chuyến bay này chưa
+        String sqlCheck = "SELECT COUNT(*) FROM Tickets WHERE FlightID = ? AND SeatNumber = ?";
+        // Lệnh chèn vé mới
         String sqlInsert = "INSERT INTO Tickets (UserID, FlightID, SeatNumber, Status) VALUES (?, ?, ?, N'Confirmed')";
 
         try {
-            // Bước 1: Check trạng thái từ Database
+            // Bước A: Kiểm tra tính khả dụng của ghế
             try (PreparedStatement psCheck = conn.prepareStatement(sqlCheck)) {
                 psCheck.setInt(1, flightID);
-                ResultSet rs = psCheck.executeQuery();
-                if (rs.next()) {
-                    String currentStatus = rs.getString("Status");
-                    // Nếu là Boarding thì trả về false ngay, không thực hiện Insert
-                    if ("Boarding".equalsIgnoreCase(currentStatus)) {
-                        return false; 
+                psCheck.setString(2, seatNumber);
+                try (ResultSet rs = psCheck.executeQuery()) {
+                    if (rs.next() && rs.getInt(1) > 0) {
+                        return false; // Ghế đã có người đặt, trả về thất bại
                     }
                 }
             }
 
-            // Bước 2: Thực hiện đặt vé nếu trạng thái hợp lệ
+            // Bước B: Nếu ghế trống, tiến hành chèn vé
             try (PreparedStatement psInsert = conn.prepareStatement(sqlInsert)) {
                 psInsert.setInt(1, userID);
                 psInsert.setInt(2, flightID);
@@ -51,6 +49,7 @@ public class TicketDAO {
         }
     }
 
+    // 2. Chức năng Xóa vé
     public boolean deleteTicket(int ticketID) {
         String sql = "DELETE FROM Tickets WHERE TicketID = ?";
         try (PreparedStatement ps = conn.prepareStatement(sql)) {
@@ -62,6 +61,7 @@ public class TicketDAO {
         }
     }
 
+    // 3. Lấy danh sách vé của người dùng
     public List<Ticket> getTicketsByUserId(int userID) {
         List<Ticket> list = new ArrayList<>();
         String sql = "SELECT t.TicketID, t.SeatNumber, f.FlightNumber, f.DepartureCity, f.DestinationCity, f.DepartureTime, t.Status " +
@@ -76,7 +76,10 @@ public class TicketDAO {
                 t.setFlightNumber(rs.getString("FlightNumber"));
                 t.setDepartureCity(rs.getString("DepartureCity"));
                 t.setDestinationCity(rs.getString("DestinationCity"));
-                t.setDepartureTime(rs.getTimestamp("DepartureTime").toString());
+                
+                Timestamp ts = rs.getTimestamp("DepartureTime");
+                if (ts != null) t.setDepartureTime(ts.toString());
+                
                 t.setStatus(rs.getString("Status"));
                 list.add(t);
             }

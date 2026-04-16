@@ -21,7 +21,7 @@ public class CheckInController {
     private void initController() {
         refreshTable();
 
-        // [TÍNH NĂNG MỚI]: Khi bấm vào 1 khách hàng, tự động điền số ghế đã đặt vào ô Text để nhân viên khỏi phải gõ lại
+        // Khi bấm vào 1 khách hàng, tự động điền số ghế đã đặt vào ô Text để nhân viên khỏi phải gõ lại
         view.getTicketTable().getSelectionModel().addListSelectionListener(e -> {
             if (!e.getValueIsAdjusting()) {
                 int row = view.getTicketTable().getSelectedRow();
